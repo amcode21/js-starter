@@ -1,0 +1,11 @@
+#header {
+	text-align: center;
+}
+
+#timer-input {
+	width: calc(60%);
+}
+
+#timer-text {
+	text-align: center;
+}
