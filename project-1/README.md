@@ -1,5 +1,12 @@
 ## Instructions
 
+NOTE: This tutorial requires **basic** knowledge of HTML, CSS, and JavaScript
+
+This is a tutorial for how to make a timer, there are two sections
+- HTML -> What the user will interact with
+- JavaScript (JS) -> What makes the whole experience dynamic and not static (images = static; gifs = dynamic)
+- Yeah that's a weird analogy but hey...what is life??
+
 ## HTML
 1) We're gonna need a couple of files
 	- `index.html`
@@ -19,15 +26,13 @@
 		</html>
 	  ```
 
-4) Next, we want to add some things to our head - a charset, a title, and **importing our stylesheet/css**
+4) Next, we want to add some things to our head - a charset and a title
 	- ```html
 		<!DOCTYPE html>
 		<html>
 			<head>
 				<meta charset="utf-8">
 				<title>Timer Time >:)</title>
-				<!--Importing our CSS - relationship is a stylesheet, and href (where it's located) is just style.css-->
-				<link rel="stylesheet" href="style.css">
 			</head>
 			<!--We declared our head and our body-->
 			<body>
@@ -119,27 +124,73 @@
 		document.getElementById('time-input').addEventListener('keydown', function(e) {
 			// Since the keycode for enter is 13, we check if whatever key code was pressed is 13
 			if (e.which === 13 || e.keyCode === 13) {
+				// Grabbing the value (what the user inputted) of the input element we created
 				var time = document.getElementById('time-input').value;
 			}
 		});
 	  ```
 
-4) So we can check if they pressed the `enter` key, but what about whether it's a number or not? Thankfully JS has an easy way for that too!
+4) So we can check if they pressed the `enter` key, but what if whatever the user entered is not a number? Thankfully JS has an easy way for that too!
 	- This code goes inside the `'keydown'` event listener for our `time-input` element
 	- Let's add this code inside our `if` statement since we want it to execute when `enter` is pressed
 	- ```js
-		// 'e' in this case is the event - a key going down
-		// It contains things such as the code of the key, from which we can determine what key was pressed
-		document.getElementById('time-input').addEventListener('keydown', function(e) {
-			// Since the keycode for enter is 13, we check if whatever key code was pressed is 13
-			if (e.which === 13 || e.keyCode === 13) {
-				var time = document.getElementById('time-input').value;
+		if (e.which === 13 || e.keyCode === 13) {
+			var time = document.getElementById('time-input').value;
+			// isNaN is a function to check if something is a number or not
+			if (isNaN(time)) { // If time is NOT a number
+				// Grab the HTML element by its ID time-text and then change whatever's inside it to what we set it to
+				// We're changing the text inside to...well read it yourself, you can change it too I guess
+				document.getElementById('time-text').innerHTML = 'Not a number, smh...';
 			}
-		});
+			else {
+				// And this is where the good stuff happens...
+			}
+		}
 	  ```
 
+5) Alright, so we took care of the part of user error, phew...now time to make the timer itself!
+	- All code from here on goes in that `else` statement when we use `isNaN` where the good stuff happens :)
+	- So what do we want to do:
+		- Take the decimal value of whatever the user inputted,
+		- Display it to the user every X milliseconds
+	- So we're gonna use the function `setInterval(function, milliseconds)`
+		- Essentially, it executes the `function` every `milliseconds`
+		- For our timer, this would be useful since we want to decrement the time every X milliseconds
+	- Here's how that implemented in code would look like:
+	- ```js
+		// Getting the decimal value from whatever the user inputted and assigning it to the variable timeNum
+		var timeNum = parseFloat(time);
+		// Now we define our repeating interval function and assign it to a variable which will be used in step 6
+		var intv = setInterval(function() {
+			// Getting the timer-text and changing its HTML to whatever timeNum currently is
+			// We also display it in the timer-text section
+			document.getElementById('timer-text').innerHTML = timeNum + ' ' + 'seconds left...';
+			// We also need to decrement our time by 100 milliseconds each time
+			timeNum -= 0.1;
+		}, 100);
+		// We want to repeat this function every 100 milliseconds
+	  ```
 
-
-
-
-
+6) Well, it works, but there's just one problem...it won't stop!! Let's go ahead and fix that
+	- While we're at it, let's also use the `number.toFixed(<decimal place>)` method
+		- e.g. if `number` was `1.4000033303`, `number.toFixed(1)` would return `1.4`!
+	- ```js
+		var intv = setInterval(function() {
+			// Since it's a decimal we write it in decimal notation
+			// We're only checking for the first place past the decimal (the tenths place)
+			// We use less than because there might be some edge cases and when there is 0.1 seconds left that's pretty much the end
+			if (time.toFixed(1) < 0.1) {
+				// Making the 0 a bit nicer
+				document.getElementById('timer-text').innerHTML = '0 seconds left...';
+				// Clearing the interval set and saying it's over
+				clearInterval(intv);
+				// Alerting the user that time is up
+				return alert('Time is up!');
+			}
+			// What we did in step 5
+			document.getElementById('timer-text').innerHTML = timeNum.toFixed(1) + ' ' + 'seconds left...';
+			timeNum -= 0.1;
+		}, 100);
+	  ``` 
+# Conclusion
+- Well, hopefully your code works when you run it in a browser! If not, feel free to reference any of the files in this project folder for more information!
